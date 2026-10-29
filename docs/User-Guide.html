@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesserae User Guide</title>
+<meta name="description" content="How to operate Tesserae, the pixel-art and tileset editor: files, workspace, canvas, tools, layers, palette banks and variants, grid, import and export, shortcuts.">
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface-alt: #f0f1f3;
+    --text: #1d1f23;
+    --muted: #5d6370;
+    --border: #d9dce2;
+    --accent: #2f6fde;
+    --accent-text: #ffffff;
+    --code-bg: #eef0f4;
+    --warn-bg: #fff6e0;
+    --warn-border: #e8b84a;
+    --note-bg: #e9f1ff;
+    --note-border: #9dbcf2;
+    --kbd-bg: #f6f7f9;
+    --kbd-border: #c5c9d1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15171b;
+      --surface: #1d2025;
+      --surface-alt: #23262c;
+      --text: #e6e8ec;
+      --muted: #9aa1ad;
+      --border: #343841;
+      --accent: #7aa7ff;
+      --accent-text: #0e1116;
+      --code-bg: #262a31;
+      --warn-bg: #3a2f14;
+      --warn-border: #c99a2e;
+      --note-bg: #1b2a44;
+      --note-border: #3d5f9e;
+      --kbd-bg: #2a2e36;
+      --kbd-border: #4a505c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15171b;
+    --surface: #1d2025;
+    --surface-alt: #23262c;
+    --text: #e6e8ec;
+    --muted: #9aa1ad;
+    --border: #343841;
+    --accent: #7aa7ff;
+    --accent-text: #0e1116;
+    --code-bg: #262a31;
+    --warn-bg: #3a2f14;
+    --warn-border: #c99a2e;
+    --note-bg: #1b2a44;
+    --note-border: #3d5f9e;
+    --kbd-bg: #2a2e36;
+    --kbd-border: #4a505c;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Inter", sans-serif;
+  }
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 16px 20px;
+  }
+  header .inner, main, footer .inner { max-width: 960px; margin: 0 auto; }
+  header h1 { margin: 0 0 6px; font-size: 1.9rem; letter-spacing: -0.01em; }
+  header p { margin: 0; color: var(--muted); }
+  nav.toc {
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 24px 16px 0;
+  }
+  nav.toc ol { margin: 0; padding-left: 20px; columns: 2; column-gap: 32px; }
+  nav.toc li { break-inside: avoid; margin: 3px 0; }
+  main { padding: 0 16px 48px; }
+  section { padding-top: 36px; }
+  h2 {
+    font-size: 1.45rem;
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 { font-size: 1.1rem; margin: 22px 0 6px; }
+  p { margin: 8px 0; }
+  a { color: var(--accent); }
+  ul, ol { padding-left: 22px; }
+  li { margin: 3px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 14px;
+    font-size: 0.95rem;
+    background: var(--surface);
+  }
+  th, td { text-align: left; vertical-align: top; padding: 7px 10px; border: 1px solid var(--border); }
+  th { background: var(--surface-alt); font-weight: 600; }
+  code, kbd {
+    font-family: ui-monospace, "Cascadia Code", Consolas, Menlo, monospace;
+    font-size: 0.9em;
+  }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  kbd {
+    display: inline-block;
+    background: var(--kbd-bg);
+    border: 1px solid var(--kbd-border);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    padding: 0 6px;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .note, .warn {
+    border-left: 4px solid var(--note-border);
+    background: var(--note-bg);
+    padding: 8px 14px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0;
+  }
+  .warn { border-left-color: var(--warn-border); background: var(--warn-bg); }
+  .menu { font-weight: 600; }
+  footer { border-top: 1px solid var(--border); color: var(--muted); font-size: 0.9rem; padding: 18px 16px; }
+  @media (max-width: 640px) {
+    nav.toc ol { columns: 1; }
+    table { display: block; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <h1>Tesserae User Guide</h1>
+    <p>A pixel-art and tileset editor where every pixel is a palette reference, so one drawing carries any number of colorways. This guide covers day-to-day operation. It is kept with the source and updated as the application changes.</p>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <ol>
+    <li><a href="#concepts">Concepts in one minute</a></li>
+    <li><a href="#start">Starting, opening and saving</a></li>
+    <li><a href="#workspace">The workspace</a></li>
+    <li><a href="#canvas">The canvas</a></li>
+    <li><a href="#tools">Tools and tool options</a></li>
+    <li><a href="#selection">Selections and moving pixels</a></li>
+    <li><a href="#layers">Layers</a> · <a href="#frames">Frames and the timeline</a></li>
+    <li><a href="#palette">Palette: variants, banks and slots</a></li>
+    <li><a href="#grid">Grid and cell status</a></li>
+    <li><a href="#document-settings">Document settings and the bank mask layer</a></li>
+    <li><a href="#interop">Import and export</a></li>
+    <li><a href="#safety">Autosave, recovery and logs</a></li>
+    <li><a href="#shortcuts">Keyboard shortcuts</a></li>
+    <li><a href="#files">Where Tesserae keeps its files</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<section id="concepts">
+  <h2>1. Concepts in one minute</h2>
+  <ul>
+    <li><strong>Indexed pixels.</strong> A painted pixel stores a reference <code>(bank, slot)</code>, not a color. Change a slot's color and every pixel that references it repaints.</li>
+    <li><strong>Banks and slots.</strong> A bank is a named group of color slots (a ramp of greens, say). Slots are what you paint with.</li>
+    <li><strong>Variants.</strong> A variant is a colorway: each slot holds one color per variant. Switch a canvas to <em>Winter</em> and the whole drawing repaints; the pixels do not change.</li>
+    <li><strong>Layers.</strong> Indexed layers are the ones you paint on. Freeform (RGBA) layers arrive from PNG and non-indexed Aseprite files and are read-only until converted. Groups hold layers. A variant override repaints part of an indexed layer in chosen variants only.</li>
+    <li><strong>Views.</strong> A canvas tab is one view of a document. Two views of the same file can show different variants, zooms and layer visibility, and both stay in step with every edit.</li>
+    <li><strong>Undo.</strong> Every change to a document goes through one undo stack: painting, layer edits, palette edits, grid and settings changes. <kbd>Ctrl</kbd>+<kbd>Z</kbd> and <kbd>Ctrl</kbd>+<kbd>Y</kbd>.</li>
+  </ul>
+</section>
+
+<section id="start">
+  <h2>2. Starting, opening and saving</h2>
+  <p>Tesserae launches with no file open. The documents area offers <strong>New</strong> and <strong>Open…</strong>; the File menu has the same and more.</p>
+  <table>
+    <tr><th>Action</th><th>Menu</th><th>Shortcut</th><th>What happens</th></tr>
+    <tr><td>New document</td><td><span class="menu">File ▸ New…</span></td><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>Asks for a size (default 32×32). The new document starts with one indexed layer named <em>Layer 1</em>, one bank named <em>Bank 1</em> holding a black and a white slot, and one variant named <em>Default</em>, so it is paintable immediately. It opens clean; the starter content is not an undo step.</td></tr>
+    <tr><td>Open</td><td><span class="menu">File ▸ Open…</span></td><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Opens a <code>.tess</code> document, a <code>.png</code> (as one freeform layer) or an <code>.aseprite</code>/<code>.ase</code> file (imported; see <a href="#interop">Import and export</a>).</td></tr>
+    <tr><td>Save</td><td><span class="menu">File ▸ Save</span></td><td><kbd>Ctrl</kbd>+<kbd>S</kbd></td><td>Writes the file in place. A document that has no path yet (new, imported or recovered) asks where to save, as Save As does.</td></tr>
+    <tr><td>Save As</td><td><span class="menu">File ▸ Save As…</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>Writes a <code>.tess</code>, or a flattened <code>.png</code> of the variant the canvas shows.</td></tr>
+    <tr><td>Close</td><td><span class="menu">File ▸ Close</span></td><td><kbd>Ctrl</kbd>+<kbd>W</kbd></td><td>Closes the focused view; when it is the file's last view, the file too. Same as the tab's ✕.</td></tr>
+  </table>
+  <div class="note">Nothing unsaved is dropped without asking. Closing a tab, <kbd>Ctrl</kbd>+<kbd>W</kbd> and quitting all ask <em>Save changes?</em> for every file with unsaved edits. Cancel keeps everything open.</div>
+  <p>The native document format is <code>.tess</code>: a zip holding a JSON description and one PNG per layer cel. It is described in <code>Tesserae-File-Format.md</code> beside this guide.</p>
+</section>
+
+<section id="workspace">
+  <h2>3. The workspace</h2>
+  <p>The window is a menu bar over a docking workspace, with a <strong>status bar</strong> along the bottom. The center holds the <strong>documents area</strong>, where each open view is a tab. Around it sit three panels:</p>
+  <table>
+    <tr><th>Panel</th><th>Default place</th><th>Holds</th></tr>
+    <tr><td><strong>Tools</strong></td><td>Top of the left column</td><td>The tool buttons and, below them, the options the active tool uses (brush size and shape, mirroring, fill, contiguous, tolerance).</td></tr>
+    <tr><td><strong>Palette</strong></td><td>Left column</td><td>Variants, banks, slots and the color editor. See <a href="#palette">Palette</a>.</td></tr>
+    <tr><td><strong>Layers</strong></td><td>Right column</td><td>The layer stack of the focused document. See <a href="#layers">Layers</a>.</td></tr>
+    <tr><td><strong>Timeline</strong></td><td>Bottom</td><td>Frames across, pixel layers down, a dot where a layer has pixels at that frame; the transport, the frame edits, this frame's duration and the tags as bars. See <a href="#frames">Frames and the timeline</a>.</td></tr>
+    <tr><td><strong>Variants</strong></td><td>Bottom</td><td>The variant wall: the grid cell under the pointer (or a 16 px window around it without a grid), drawn in every variant side by side, titled by the cell's index. It redraws as you paint and as the palette changes, so a stroke made in Spring is seen in Winter and Fire while it is made. Click a tile to show that variant on the canvas.</td></tr>
+  </table>
+  <h3>The status bar</h3>
+  <p>Left to right: the document pixel under the pointer (<code>x, y</code>); its grid cell as <code>cell row,column #index</code>, where the index is <code>row × columns + column</code>, the number the Evocuration tile tools name a cell by; the working layer's pixel there as <code>bank:slot #rrggbbaa</code> in the view's variant (<code>#rrggbbaa</code> alone on a freeform layer, <code>–</code> where nothing is painted); then, on the right, the focused view's variant, its zoom, and the active tool. The pointer fields clear when the pointer leaves the canvas.</p>
+  <h3>Arranging panels</h3>
+  <ul>
+    <li><strong>Drag a panel's tab</strong> to dock it elsewhere, to stack it with another panel, or out of the window to float it. A floating window is titled by what it holds (<em>Palette + Layers</em>) and stays above the main window. Several panels can share one floating window.</li>
+    <li><strong>Close a panel</strong> with its ✕; it is hidden, not lost. <span class="menu">View ▸ Panels</span> lists every panel and brings a hidden one back where it was.</li>
+    <li><strong>Resize</strong> by dragging the splitter between docks. Inside the Palette panel, the bars between Banks, Slots and the color editor resize those sections.</li>
+    <li><strong>Canvas tabs</strong> can be dragged into splits and floating windows too. Closing a floating window that holds canvases moves them back to the documents area rather than closing the files.</li>
+  </ul>
+  <h3>Layouts</h3>
+  <p>The arrangement is remembered as you change it (a panel floated, docked, closed or moved) and when you quit, and restored next launch, floating windows included, whether or not a file is open. <span class="menu">View ▸ Reset Panels</span> returns to the default. <span class="menu">View ▸ Save Layout As…</span> stores the current arrangement under a name, and <span class="menu">View ▸ Layouts ▸ <em>name</em></span> applies it.</p>
+  <h3>Views, theme, full screen</h3>
+  <ul>
+    <li><span class="menu">View ▸ New View of Document</span> (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd>) opens a second tab on the same file. Use it to paint in one variant while watching another, or at two zooms.</li>
+    <li><span class="menu">View ▸ Theme</span> switches between <em>Dark</em> and <em>Light</em>; the choice is remembered. Dark takes its grays and its one gold accent from Aseprite's dark theme.</li>
+    <li><span class="menu">View ▸ Pixel Font</span> (on by default) sets the whole interface in the pixel font Pixelify Sans at 16 px, canvas tab titles and panel titles included, drawn the same way everywhere (as the menu dropdowns always were). Off, the interface uses the vector font Inter at 14 px. Remembered; floating panel windows follow.</li>
+    <li><span class="menu">View ▸ Zoom</span> holds the zoom commands and their keys: <kbd>1</kbd> to <kbd>6</kbd> for 100 % to 3200 %, <kbd>Ctrl</kbd>+<kbd>0</kbd> to fit the whole document in the view, <kbd>Ctrl</kbd>+<kbd>+</kbd> and <kbd>Ctrl</kbd>+<kbd>−</kbd> to step. They act on the focused canvas.</li>
+    <li><span class="menu">View ▸ Full Screen</span> (<kbd>F11</kbd>) hides the title bar, menu and toolbars. <kbd>F11</kbd> again restores them.</li>
+    <li><span class="menu">View ▸ Show Pixel Grid</span>, <span class="menu">Show Grid</span>, <span class="menu">Show Cell Status</span> and <span class="menu">Show Cell Indices</span> toggle the canvas overlays (see <a href="#grid">Grid and cell status</a>).</li>
+    <li><span class="menu">View ▸ Tiled Mode</span> repeats the document around itself, on <em>Both Axes</em>, <em>Horizontal</em> only or <em>Vertical</em> only, so a tile's far edge meets its near edge and a seam shows while you paint. The copies fill the space around the canvas and follow every stroke; only the framed one in the middle takes the pointer. Remembered between runs.</li>
+    <li><span class="menu">View ▸ Seam Check</span> marks the edge pixels of every full grid cell that do not meet the pixel across the seam, so a tile that will show a seam is caught before export. <em>Within Cell</em> pairs a cell's left edge with its own right edge and its top with its bottom, as a repeating fill tile meets itself; <em>Between Cells</em> pairs each edge with the next cell over, as cells of one piece laid side by side do. Two pixels meet when their colors are within the <em>Tolerance</em> (10, 20, 35 or 50 % of the Oklab range, the same scale as the shrinkwrap's fuzz) and their alphas within the same share; two transparent pixels always meet, and the document's own edge is never a seam. Judged on the composite the canvas shows, kept in step with every stroke, and drawn in the warning color over the pixels. Needs a grid (§9). Remembered between runs.</li>
+    <li><span class="menu">View ▸ Biome</span> shows the focused view as another biome: <em>As Painted</em>, or one of the biomes the bank names carry under the document's scheme (§10). Every bank of another biome is drawn with the colors of the bank of the same material and recolor in the chosen one, slot by slot by position (<code>gr-f-dirt</code> as <code>gr-dt-dirt</code>), so forest art previews as desert without a pixel changing; banks with no material, or with no counterpart in that biome, draw as painted. The pixels keep their painted banks: painting writes the bank you picked, the eyedropper reads it, and the previews show the biome's colors. View state like the variant, so two views can show two biomes side by side; the status bar says <em>biome dt</em>. A biome the bank names stop carrying (a rename, a changed scheme) falls back to <em>As Painted</em>.</li>
+    <li><span class="menu">View ▸ Onion Skin</span> (<kbd>F3</kbd>) ghosts the neighboring frames under the current one (see <a href="#frames">Frames and the timeline</a>).</li>
+  </ul>
+  <h3>Help</h3>
+  <p>The title bar names the build (<em>Tesserae 0.1.0-alpha.1</em>); a report of a problem should quote it.</p>
+  <ul>
+    <li><span class="menu">Help ▸ Report a Problem…</span> opens the issue tracker at <a href="https://github.com/xepherys/Tesserae/issues">github.com/xepherys/Tesserae/issues</a> in the browser.</li>
+    <li><span class="menu">Help ▸ Open Logs Folder</span> opens the folder with the application log and any crash bundles (<a href="#safety">§12</a>), ready to attach to a report.</li>
+    <li><span class="menu">Help ▸ About Tesserae…</span> shows the version, the .NET runtime, the operating system and the logs folder. <em>Copy Details</em> puts those lines on the clipboard for pasting into a report; the other buttons are the two entries above.</li>
+  </ul>
+  <p>Closing the main window quits the application: every floating panel window closes with it.</p>
+</section>
+
+<section id="canvas">
+  <h2>4. The canvas</h2>
+  <table>
+    <tr><th>Do this</th><th>To</th></tr>
+    <tr><td>Mouse wheel</td><td>Zoom in and out around the pointer. Zoom is a whole number from 1× to 64×, doubling each step.</td></tr>
+    <tr><td><kbd>1</kbd>–<kbd>6</kbd>, <kbd>Ctrl</kbd>+<kbd>0</kbd>, <kbd>Ctrl</kbd>+<kbd>+</kbd>/<kbd>−</kbd></td><td>Zoom to 100 % … 3200 %, fit the document in the view, step in or out; the middle of the view stays put.</td></tr>
+    <tr><td>Middle-button drag</td><td>Pan. Works anywhere in the canvas panel, including the margin around the art.</td></tr>
+    <tr><td>Left button</td><td>Use the active tool. Clicking also gives the canvas keyboard focus.</td></tr>
+    <tr><td><kbd>Esc</kbd></td><td>Abandon the gesture in progress: a shape being dragged, a lasso, a move. Nothing is committed. With no gesture, one step per press: put a floating piece back, then deselect, then end focus. Works wherever keyboard focus is, not only in the canvas.</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>Commit a floating (lifted) piece of pixels where it is.</td></tr>
+    <tr><td>Arrow keys</td><td>Nudge a floating piece by one pixel; with <kbd>Shift</kbd>, by ten.</td></tr>
+  </table>
+  <p>The brush outline follows the pointer and shows exactly which pixels a pencil, eraser or shape will paint, including the mirrored copies. Shape tools and the lasso preview their result while you drag and commit on release.</p>
+  <h3>Overlays</h3>
+  <ul>
+    <li><strong>Pixel grid:</strong> a line between every pixel. Hidden automatically at low zoom, where it would be noise.</li>
+    <li><strong>Grid:</strong> the document's cell grid, when one is set (<a href="#grid">Grid Settings</a>).</li>
+    <li><strong>Cell status:</strong> a small badge in the top-right of each cell that has a status. Badges keep a constant size on screen and hide when cells are too small to hold one.</li>
+    <li><strong>Cell indices:</strong> each full grid cell's index, <code>row × columns + column</code>, in its top-left corner. Hidden when cells are narrower than 24 screen pixels.</li>
+    <li><strong>Focus dimming:</strong> with focus on (§6), everything outside the focus region under a translucent veil.</li>
+    <li><strong>Seam marks:</strong> with the seam check on (§3), the edge pixels that do not meet across a seam, in the warning color.</li>
+    <li><strong>Onion skins:</strong> with onion skinning on (§7), the neighboring frames ghosted under the current one.</li>
+  </ul>
+  <h3>Messages over the canvas</h3>
+  <p>When a gesture cannot land, the canvas says why rather than doing nothing: painting on a hidden layer (its eye, or a group's above it, is off, so the stroke would land out of sight), on a layer hidden in this view, on a locked layer, on a group, with a bank the layer does not allow, with the shade tool on a freeform layer, or with no layer selected. A paste onto a layer that a bank claims reports pixels that came from other banks; a paste whose colors no slot shows reports how many went into the <em>Pasted</em> bank; a paste with nothing on the clipboard says so. The notice clears when the situation changes.</p>
+</section>
+
+<section id="tools">
+  <h2>5. Tools and tool options</h2>
+  <p>Tools live in the Tools panel and the <span class="menu">Tools</span> menu. Each has a single-key shortcut (no modifier) that works whenever you are not typing in a text box.</p>
+  <p>Related tools share one button in the Tools panel, as in Aseprite: <em>Line</em> and <em>Curve</em>; <em>Rectangle</em> and <em>Ellipse</em>; <em>Marquee</em>, <em>Lasso</em> and <em>Magic Wand</em>; <em>Fill</em> and <em>Gradient</em>. A shared button carries a small corner mark and shows the tool chosen last in its block (remembered between runs); a click selects that tool, and <strong>holding the button down</strong> or <strong>right-clicking</strong> it opens a menu of the block's tools. A keyboard shortcut or the <span class="menu">Tools</span> menu picks any tool directly and the block's button follows.</p>
+  <table>
+    <tr><th>Tool</th><th>Key</th><th>What it does</th><th>Modifiers</th></tr>
+    <tr><td>Pencil</td><td><kbd>B</kbd></td><td>Paints the selected slot with the brush. A stroke is one undo step.</td><td><kbd>Shift</kbd>+click draws a straight line from where the last stroke ended</td></tr>
+    <tr><td>Eraser</td><td><kbd>E</kbd></td><td>Clears pixels with the brush.</td><td><kbd>Shift</kbd>+click draws a straight line from where the last stroke ended</td></tr>
+    <tr><td>Shade</td><td><kbd>S</kbd></td><td>Moves each painted pixel under the brush one slot toward the start of its bank (darker, with banks ordered dark to light); the ends stop. A pixel shifts once per stroke, keeps its bank and alpha, and so recolors in every variant. Unpainted pixels are left alone.</td><td><kbd>Shift</kbd> moves toward the end of the bank (lighter)</td></tr>
+    <tr><td>Fill</td><td><kbd>G</kbd></td><td>Flood-fills with the selected slot. <em>Contiguous</em> fills the connected area; off, it replaces every pixel of the clicked tuple in the layer.</td><td></td></tr>
+    <tr><td>Eyedropper</td><td><kbd>I</kbd></td><td>Makes the tuple under the pointer the selected slot. Reads only; no undo step.</td><td></td></tr>
+    <tr><td>Move</td><td><kbd>V</kbd></td><td>Drags the selected pixels. See <a href="#selection">Selections</a>. A press on the <em>path</em> (the Path tool's curve) where there is no selection under the pointer drags the whole path instead; Snap to grid lands its first anchor on a grid crossing.</td><td></td></tr>
+    <tr><td>Marquee</td><td><kbd>M</kbd></td><td>Rectangular selection by drag.</td><td><kbd>Shift</kbd> adds, <kbd>Alt</kbd> subtracts</td></tr>
+    <tr><td>Lasso</td><td><kbd>Q</kbd></td><td>Freehand selection; the enclosed region is worked out on release.</td><td><kbd>Shift</kbd> adds, <kbd>Alt</kbd> subtracts</td></tr>
+    <tr><td>Magic Wand</td><td><kbd>W</kbd></td><td>Selects pixels matching the clicked one, contiguous or across the layer, within the tolerance.</td><td><kbd>Shift</kbd> adds, <kbd>Alt</kbd> subtracts</td></tr>
+    <tr><td>Line</td><td><kbd>L</kbd></td><td>A straight line from press to release, stamped with the brush.</td><td><kbd>Shift</kbd> constrains the angle, <kbd>Alt</kbd> draws from the center</td></tr>
+    <tr><td>Curve</td><td><kbd>Shift</kbd>+<kbd>L</kbd></td><td>A curve in three gestures, as Aseprite's: drag a straight line and release; move the pointer to bend it and click to set the first control point; move again and click to set the second. It previews at every step and lands <em>pixel-perfect</em> (no doubled corners on a diagonal step), stamped with the brush and inside the selection like every shape. <kbd>Esc</kbd> at any point abandons it; switching tools does too.</td><td><kbd>Shift</kbd> constrains the line's angle while dragging it</td></tr>
+    <tr><td>Path</td><td><kbd>P</kbd></td><td>Edits the document's <strong>path</strong>: a Bézier curve through anchors with handles, like a pen tool. <strong>Click</strong> adds a corner anchor at the end of the path (a click that wanders a pixel or two is still a click). <strong>Drag out of a new anchor</strong>, past a few screen pixels, to pull out its handles, mirrored, which makes the curve smooth there; <strong>drag an anchor</strong> to move it (its handles go along); <strong>drag a handle</strong> of the selected anchor to bend the curve, the opposite handle mirroring it; <kbd>Alt</kbd>+<strong>drag an anchor</strong> pulls handles out of a corner you already placed, and <kbd>Alt</kbd>+<strong>click</strong> one drops its handles, back to a corner. <strong>Click the first anchor</strong> from the last to close the path; a click on empty space after that starts a new path. Each step is one undo. The path paints nothing by itself: the canvas previews the stroke it would paint, and the Tools panel's buttons (below) stroke it with the brush pixel-perfect or turn it into a selection; the <strong>Gradient tool</strong> sweeps its gradient along the path (see <em>Path</em> under the gradient's options). The path stays until cleared, through tool switches and saves (the working path is never written to the file; <em>saved paths</em>, below, are); other tools show it as a thin line without its anchors, and the Move tool drags it whole.</td><td><kbd>Alt</kbd> while dragging a handle moves it alone, breaking the mirror; on an anchor, pulls out or drops handles. <kbd>Enter</kbd> strokes, <kbd>Backspace</kbd> removes the selected anchor, <kbd>Esc</kbd> clears the path (before anything else Escape backs out of)</td></tr>
+    <tr><td>Rectangle</td><td><kbd>U</kbd></td><td>A rectangle spanning the drag; outlined or filled.</td><td><kbd>Shift</kbd> makes a square, <kbd>Alt</kbd> draws from the center</td></tr>
+    <tr><td>Ellipse</td><td><kbd>Shift</kbd>+<kbd>U</kbd></td><td>An ellipse inscribed in the drag; outlined or filled.</td><td><kbd>Shift</kbd> makes a circle, <kbd>Alt</kbd> draws from the center</td></tr>
+    <tr><td>Gradient</td><td><kbd>Shift</kbd>+<kbd>G</kbd></td><td>Fills the selection (or the whole layer when nothing is selected) with a gradient along the drag, previewed as a line in the gradient's own colors (each pixel of the line is what the fill will put there, dither included), through the <em>stops</em> set in the Tools panel (below). On an <em>indexed</em> layer every stop is a slot of the active bank, so the gradient never leaves the bank, and a pixel keeps its own alpha (an unpainted one becomes opaque); until you edit the stops it runs through every slot of the bank in order, first at the drag's start and last at its end, so a bank ordered dark to light gives a dark-to-light ramp and dragging the other way reverses it. On a <em>freeform</em> layer the stops are colors. Between two stops the pixels are dithered (or, without dither, hard-stepped on an indexed layer and blended on a freeform one). Each stop owns a <em>band</em> reaching halfway to its neighbors, and the drag runs from the start of the first band to the end of the last, so four slots over a 16-pixel drag give four bands of four pixels rather than a half band at each end; a smooth blend on a freeform layer instead puts the first color exactly at the drag's start and the last at its end. A stroke is one undo step.</td><td></td></tr>
+  </table>
+  <h3>Options</h3>
+  <p>The Tools panel shows only the options the active tool uses. All of them are remembered between runs. When a tool's options run taller than the panel, the panel scrolls.</p>
+  <table>
+    <tr><th>Option</th><th>Tools</th><th>Meaning</th></tr>
+    <tr><td>Size</td><td>Pencil, Eraser, Line, Curve, Rectangle, Ellipse, Path</td><td>Brush edge length, 1 to 64 pixels. <kbd>[</kbd> and <kbd>]</kbd> step it.</td></tr>
+    <tr><td>Square / Circle</td><td>Brush tools</td><td>The brush is a square of that size, or the disk inscribed in it.</td></tr>
+    <tr><td>Mirror X / Mirror Y</td><td>Brush tools</td><td>Every stamp is repeated across the document's vertical and/or horizontal center line. A stamp straddling the axis paints each pixel once.</td></tr>
+    <tr><td>Fill</td><td>Line, Rectangle, Ellipse</td><td>Shapes are filled rather than outlined.</td></tr>
+    <tr><td>Contiguous</td><td>Fill, Magic Wand</td><td>On: only the area connected to the clicked pixel. Off: every pixel of that color in the layer.</td></tr>
+    <tr><td>Tolerance</td><td>Magic Wand only</td><td>How far a color may differ from the clicked one, per channel, 0 to 255. Judged in the variant the canvas shows. Zero selects the clicked slot alone. Fill always matches exactly.</td></tr>
+    <tr><td>Snap to grid</td><td>Marquee, Lasso, Move</td><td><kbd>Shift</kbd>+<kbd>S</kbd>, also under <span class="menu">View</span>. Selections and moves land on the lines of the document grid (§9): a marquee's corners go to the nearest crossings, so a drag across cells selects whole cells; a lasso's points do the same; a moved piece lands with its top-left corner on a crossing, and the arrow keys nudge it by a cell. Drawing never snaps. With no grid in the document it does nothing, and the canvas says so.</td></tr>
+    <tr><td>Shrinkwrap</td><td>Marquee, Lasso</td><td>A new selection keeps only the painted pixels of the working layer; the transparent pixels inside the box are left out, so a box around a tile selects the tile. With <kbd>Shift</kbd> the new box is shrinkwrapped before it is added. <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> (<span class="menu">Edit ▸ Shrinkwrap Selection</span>) does the same to the selection you already have, with the same settings. A box over nothing painted deselects.</td></tr>
+    <tr><td>Alpha lock</td><td>Pencil, Shade, Fill, Gradient, Line, Curve, Rectangle, Ellipse, Path</td><td>Paint only where the layer already has a pixel, so a recolor or a shading pass never spills past the sprite's own edge. The layer's pixels are read as the stroke begins and held for the stroke. Remembered between runs. The eraser is unaffected, since it can only ever remove what is there; a move or a paste is not a stroke and ignores it.</td></tr>
+    <tr><td>Focus</td><td>Every tool</td><td>The document's focus state (§6), the same toggle as <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>. Lit while focus is on; turning it on with nothing selected only says so.</td></tr>
+    <tr><td>Fuzz % / Background</td><td>Marquee, Lasso, with Shrinkwrap on</td><td>The <strong>smart shrink</strong>. With a fuzz above zero, painted pixels close in color to the background are left out too, so a box drawn around a house on grass conforms to the house. <em>Background</em> says what to compare against: <em>Transparent</em> (nothing but transparent pixels, whatever the fuzz), <em>Outline</em> (the colors found along the outline you drew, a box's edge or the line of a lasso, since a selection drawn around a thing runs over its surroundings; a color on fewer than one outline pixel in ten is something the outline brushed, a sprite's corner, and does not count) or <em>PaintColor</em> (the paint color, or the active slot's color in the shown variant). Closeness is judged in Oklab: 10 is a near shade, 30 a clearly different one, 100 anything. A transparent pixel never survives, and on an indexed layer colors are read in the variant the canvas shows.</td></tr>
+    <tr><td>Stroke / To selection / Remove point / Clear</td><td>Path</td><td>What to do with the path. <strong>Stroke</strong> (<kbd>Enter</kbd>) paints it with the brush, pixel-perfect, inside the selection and under alpha lock and focus like any shape; the path stays for another pass, say in a second color one pixel over. <strong>To selection</strong> selects everything the path encloses, outline included (an open path is closed back to its start for this), replacing the selection; it is the way to a crisp curved mask. <strong>Remove point</strong> (<kbd>Backspace</kbd>) removes the selected anchor. <strong>Clear</strong> (<kbd>Esc</kbd>) removes the path. Each is one undo step. The <span class="menu">Edit</span> menu has them as <em>Stroke Path</em>, <em>Path to Selection</em> and <em>Clear Path</em>, plus <em>Gradient on Path</em>, which is the sweep below.</td></tr>
+    <tr><td>Saved paths</td><td>Path</td><td>A list of paths kept with the document, in the file, so a vine, a rope or a road outline can be brought back in any later session. <strong>Save</strong> keeps the working path as a new row under the name in the box, or the next <em>Path N</em> when the box is empty or the name is taken. <strong>Load</strong> (or a double-click on a row) makes the selected saved path the working path, which you can then edit, move or stroke without touching the saved copy. <strong>Replace</strong> overwrites the selected row with the working path, keeping its name. <strong>Delete</strong> removes it. Typing a new name in the box and pressing <kbd>Enter</kbd> renames the selected row. Each is one undo step.</td></tr>
+    <tr><td>Path: Off / Along / Across, Width</td><td>Gradient, while the document has a path</td><td>The path as the gradient's sweep. <em>Off</em>: the path is ignored and the gradient runs along a drag as usual. <em>Along</em>: a <strong>click</strong> anywhere on the canvas (no drag) sweeps the gradient along the path: the first stop at the path's start and the last at its end, each pixel taking the stop of the nearest point of the path, so the gradient bends with the curve; it fills the selection, or the whole layer with nothing selected, and respects alpha lock and focus, so a path from one corner, out to the side and down to the bottom sweeps a bank's ramp around that bend. Pixels far from the path take the stop of the nearest end. The sweep is computed for the whole document at once and takes a moment at most, whatever the path. <em>Across</em>: a click lays the gradient outward from the path to the <em>Width</em>, the first stop on the path and the last at the width, and pixels beyond the width are left alone; a glow, a tube or a soft shadow hugging the curve. A pixel equally near two parts of a tight bend takes one side. Both work on indexed and RGBA layers with every dither and the same stops.</td></tr>
+    <tr><td>Dither</td><td>Gradient, Path</td><td><em>Bayer2</em>, <em>Bayer4</em> (the default) or <em>Bayer8</em>: an ordered dither of that cell size between neighboring stops. <em>BlueNoise</em>: a dither with no repeating cell, from a 64&times;64 blue-noise tile, so a wide gradient shows grain rather than a pattern. <em>None</em>: hard steps between slots on an indexed layer, a smooth blend on a freeform layer.</td></tr>
+    <tr><td>Gradient strip</td><td>Gradient, Path</td><td>The gradient as it will paint, with a marker under each <em>stop</em>, like an engine's gradient field. On an indexed layer the stops are slots of the bank you are painting with, shown in the canvas's variant; on a freeform layer they are colors. <strong>Click a marker</strong> to select it and <strong>drag</strong> it along; <strong>click under the strip</strong> where there is no marker to add a stop there (it takes the slot or color the gradient already has at that point, so the look does not jump); <kbd>Delete</kbd> removes the selected stop. The caption above says what the stops are.</td></tr>
+    <tr><td>Stops</td><td>Gradient, Path</td><td>How many stops, 1 to 32. Changing it spreads the stops evenly again, each keeping the slot or color the gradient had at its new position. <strong>Reset</strong> returns to the default: every slot of the bank, evenly, or black to white.</td></tr>
+    <tr><td>At %</td><td>Gradient, a selected stop</td><td>Where along the gradient the selected stop sits, 0 at the start and 100 at the end; it is the middle of the stop's band, and the drag covers the first and last bands whole, so the first stop's pure color begins at the drag's start and the last's ends at its end. Two stops at one position make a hard edge.</td></tr>
+    <tr><td>Slot / Color</td><td>Gradient, a selected stop</td><td>What the selected stop paints: on an indexed layer its slot, numbered as the Palette panel lists the bank's slots from 1 (<strong>Use selected</strong> takes the slot selected in the Palette panel); on a freeform layer its color, <code>RRGGBB</code> or <code>RRGGBBAA</code> (<strong>Use paint</strong> takes the paint color). <strong>Remove stop</strong> removes it; the last stop stays.</td></tr>
+  </table>
+  <div class="note">Painting always writes to the <strong>working layer</strong>, the one selected in the Layers panel for the focused view. A selection acts as a mask: every tool paints inside it and nowhere else.</div>
+</section>
+
+<section id="selection">
+  <h2>6. Selections and moving pixels</h2>
+  <p>Everything in this section works on an indexed layer and on a freeform (RGBA) layer alike. A piece lifted from a freeform layer holds colors and lands as colors; the magic wand on a freeform layer selects the run of one exact color, or, with a tolerance, colors within that distance per channel. Cut and copy from a freeform layer carry colors only, so a paste of them onto an <em>indexed</em> layer matches each color to the slot showing it in the active variant and puts any color the palette lacks in one new bank named <em>Pasted</em>; a paste of indexed pixels onto a freeform layer lands as the colors they showed.</p>
+  <ul>
+    <li>Make a selection with the marquee, lasso or wand, or from a path (<em>To selection</em> in the Path tool's options, §5); its outline is drawn as marching ants (alternating light and dark dashes that move), so it reads on any pixels. A click with no drag deselects. <span class="menu">Edit ▸ Select All</span> (<kbd>Ctrl</kbd>+<kbd>A</kbd>) and <span class="menu">Deselect</span> (<kbd>Ctrl</kbd>+<kbd>D</kbd>) do what they say.</li>
+    <li><span class="menu">Edit ▸ Delete</span> (<kbd>Delete</kbd>) clears the selected pixels on the working layer.</li>
+    <li><strong>Reshaping a selection.</strong> <span class="menu">Edit ▸ Invert Selection</span> (<kbd>Ctrl</kbd>+<kbd>I</kbd>) selects everything else, or everything when nothing is selected. <span class="menu">Expand Selection…</span>, <span class="menu">Contract Selection…</span> and <span class="menu">Border Selection…</span> ask for a number of pixels (the last amount is offered again) and grow the selection outward, shrink it from every edge (the canvas edge counts as an edge), or keep only its own edge that many pixels wide, which is how a sprite's outline is selected from the inside. Growth is square-cornered, as pixel art expects. A selection contracted to nothing goes away. Each is one undo step and puts down a floating piece first.</li>
+    <li><strong>Focus.</strong> <span class="menu">Edit ▸ Focus on Selection</span> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>, or the <em>Focus</em> toggle in the Tools panel) takes the selected region as the <strong>focus region</strong>: the pencil, shade, fill, gradient and shape tools paint only inside it, everything outside it is dimmed, and the region stays when the selection changes or goes away, so the marquee is free for other work while a sprite is worked on. A selection made inside the region narrows painting further; one outside it paints nothing. The same command, the toggle, or <kbd>Esc</kbd> with nothing else to back out of, turns it off; Undo also reverses turning it on or off. Focus is part of the document while it is open, like the selection, and is never saved. A canvas resize moves the region with the art.</li>
+    <li><strong>Snap to grid</strong> (<kbd>Shift</kbd>+<kbd>S</kbd>) makes the marquee, the lasso, a move and the arrow-key nudge land on the document grid's lines; <strong>Shrinkwrap</strong> (a Tools panel option for the marquee and lasso) drops the unpainted pixels from a new selection, and <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> shrinkwraps the one you have. Both are described under tool options (§5).</li>
+    <li><strong>Move.</strong> With the Move tool, or by dragging from <em>inside</em> the selection with a selection tool and no modifier, the first drag lifts the selected pixels into a <strong>floating piece</strong>; later drags move the piece. It stays adjustable until something commits it: <kbd>Enter</kbd>, a deselect, switching tool, or saving. Arrow keys nudge it. <kbd>Esc</kbd> during a drag abandons that drag. The <strong>mask layers</strong> (§7) come along: when the piece is lifted, every unlocked mask layer's pixels under the selection are lifted with it, hidden or not, and land where it lands (or go back where they were on a cancel), flipped and rotated with it; one undo step covers the art and the masks. A paste brings no mask pixels.</li>
+    <li><strong>Flip and rotate.</strong> <span class="menu">Edit ▸ Flip Horizontal</span> (<kbd>Shift</kbd>+<kbd>H</kbd>), <span class="menu">Flip Vertical</span> (<kbd>Shift</kbd>+<kbd>V</kbd>), <span class="menu">Rotate Clockwise</span> (<kbd>Shift</kbd>+<kbd>R</kbd>) and <span class="menu">Rotate Counterclockwise</span> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) turn the selected pixels over or around in place, about the selection's center; a rotation of a non-square selection swaps its width and height around that center (when they differ by an odd amount the top-left corner stays, so rotating back returns exactly). The pixels are lifted into a floating piece if they were not already, so a move can follow, and <kbd>Enter</kbd> puts them down; the selection follows the new shape. One undo step. They need a selection or a floating piece.</li>
+    <li><strong>Clipboard.</strong> <kbd>Ctrl</kbd>+<kbd>X</kbd>, <kbd>Ctrl</kbd>+<kbd>C</kbd>, <kbd>Ctrl</kbd>+<kbd>V</kbd> cut, copy and paste the selection. A paste arrives as a floating piece you can position before committing. Within the document, pixels keep their bank and slot references. Into another document, or from an RGBA layer, they are matched by color: a color some slot shows in <em>any</em> variant becomes that slot (so a piece copied while Spring showed pastes right while Fire shows), a translucent color becomes the opaque slot of its hue with the alpha kept on the pixel, and a color no variant shows goes into one new bank named <em>Pasted</em>, which undo removes with the paste. The canvas tells you how many colors spilled.</li>
+    <li><strong>Pasting onto another biome's layer.</strong> When the layer under the paste has <em>allowed banks</em> (§7) and the piece brings banks they exclude (forest dirt onto a layer that allows only <code>biome=mc</code>), the <strong>Map banks</strong> dialog opens while the piece still floats. It lists each pasted bank with its pixel count and the bank it will <em>become</em> on this layer, and under it every slot the piece uses with the slot that stands in, each with its swatch. The defaults come from the bank name scheme (§10): a bank becomes the bank of the same material and recolor among the layer's allowed banks (<code>gr-f-dirt</code> becomes <code>gr-mc-dirt</code>), or the one allowed bank when there is only one; slots pair by position, and when the two banks have different slot counts the darkest pairs with the darkest and the lightest with the lightest, the shades between spread proportionally over the slots the BankMap keeps in luminance order. Change any box; <em>keep as pasted</em> leaves that bank (or that slot) exactly as it came. <strong>Apply</strong> repoints the floating piece as one undo step of its own, so Undo takes back the mapping and leaves the paste; <strong>Keep as Pasted</strong> closes without changes. <kbd>Enter</kbd> then puts the piece down as usual. <span class="menu">Edit ▸ Map Banks of Floating Piece…</span> opens the same dialog for any floating piece of references, foreign banks or not, so a piece can be repointed at another bank of its material before it lands.</li>
+    <li><strong>From and to other programs.</strong> A copy also puts the colors you saw on the system clipboard as an image, so they paste into Aseprite, an image editor or a chat. Copy in Aseprite (or any program that puts an image on the clipboard) and <kbd>Ctrl</kbd>+<kbd>V</kbd> here pastes it the same way a piece from an RGBA layer lands: as colors onto an RGBA layer, matched by color onto an indexed layer, with the spill into <em>Pasted</em> announced. Set the working layer first; have a BankMap imported if you want the colors to land in their banks rather than in <em>Pasted</em>. Translucent pixels keep their alpha; an image that only a bitmap format carries arrives opaque. If the clipboard holds no image at all, the canvas says so and nothing happens.</li>
+  </ul>
+</section>
+
+<section id="layers">
+  <h2>7. Layers</h2>
+  <p>The Layers panel lists the focused document's stack, <strong>top-most first</strong>. Each row has four columns: the eye (visible in the file), the padlock (locked against editing), a type icon, and the name. Groups indent their children and fold with the arrow before the name.</p>
+  <table>
+    <tr><th>Icon</th><th>Layer type</th><th>Notes</th></tr>
+    <tr><td>Folder</td><td>Group</td><td>Holds layers and other groups. Not paintable. Opacity and visibility apply to everything inside.</td></tr>
+    <tr><td>Nine-block grid</td><td>Indexed</td><td>The paintable kind. Pixels are bank/slot references.</td></tr>
+    <tr><td>Rainbow gradient</td><td>Freeform (RGBA)</td><td>Real colors, from PNG or non-indexed Aseprite import. Paintable with the pencil, eraser, fill and shapes in the Palette panel's <em>paint color</em> (§8); the selection tools, the magic wand, move, cut, copy, paste and delete work on it too (§6). Only the shade tool, which walks a bank's slots, needs an indexed layer. <em>To Indexed</em> turns it into references.</td></tr>
+    <tr><td>Stencil (a plate with a hole)</td><td>Mask</td><td>An RGBA layer that holds set colors rather than art: a physics mask, a kinds mask, the derived bank and biome masks (§10). <em>Layer Properties</em> makes an RGBA layer a mask and lists its <strong>mask colors</strong>, one per line as <code>RRGGBB</code> and an optional label (<em>From pixels</em> lists the colors already painted on it); the pencil, fill and shapes then paint only those colors, which the Palette panel offers as swatches, and the gradient refuses the layer. When pixels of any other layer are moved, the mask layers' pixels under them move too, hidden or not (§6).</td></tr>
+  </table>
+  <h3>Buttons</h3>
+  <table>
+    <tr><th>Button</th><th>Does</th></tr>
+    <tr><td>+ Layer</td><td>Adds a layer and makes it the working layer. With a layer selected, the new one is its sibling directly below it (same group, same level); with a group selected, it goes to the top of that group; with nothing selected, to the top of the stack. The button adds the kind added last (indexed to begin with); <strong>holding the button down</strong> or <strong>right-clicking</strong> it opens a menu to add a <em>New Indexed Layer</em> or a <em>New RGBA Layer</em>, which then becomes the button's default. From the keyboard: <kbd>Shift</kbd>+<kbd>N</kbd> for an indexed layer, <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd> for an RGBA layer (also in the <span class="menu">Layer</span> menu).</td></tr>
+    <tr><td>+ Group</td><td>With one row or none selected: an empty group. With two or more <em>sibling</em> layers selected: folds them into a new group where the top-most was.</td></tr>
+    <tr><td>+ Override</td><td>Adds a variant override layer to the selected indexed layer.</td></tr>
+    <tr><td>To Indexed</td><td>Converts the selected freeform layer (or every freeform layer under a selected group) to indexed layers. A color some bank already holds, in the variant the canvas shows, becomes a reference to that bank's slot (the layer's own <em>allowed banks</em> are tried first, then a bank that <em>claims</em> the layer by name or pattern; a color two banks share is settled pixel by pixel by the bank mask layer, the document's named one or a layer called <code>Mask_Banks</code>, whose painted color names the bank, else by the first bank in order); the remaining colors share one new bank named after the layer, one slot per color, and no bank is made when every color matched. A layer named <code>{base}_{Variant}</code>, with <em>Variant</em> one of the palette's variant names, matches in <em>that</em> variant, one layer at a time in the palette's variant order, each against the already converted <code>{base}_{Other}</code> so its pixels take the same references wherever the colors agree; a whole Aseprite-style <code>Tiles</code> group converts in one click this way, ready for <em>Collapse Variants</em>. The canvas shows a notice saying where the colors went. Import the BankMap first (File ▸ Import BankMap…) so the art lands in its real banks. Each pixel keeps its own alpha: a translucent pixel converts to a translucent reference and renders at that alpha times its slot color's, in every variant. Refused, with the reason shown, only when the layers hold more than 256 distinct colors for one new bank.</td></tr>
+    <tr><td>Collapse Variants</td><td>For selected indexed layers (or groups of them) named <code>{base}_{Variant}</code>, where <em>Variant</em> is one of the palette's variant names: keeps the layer of the variant the canvas shows as <code>{base}</code>, and for every other variant adds an override scoped to it holding only the pixels that variant paints differently (or paints where the key does not), then removes that variant's layer. A pixel the key paints that a variant leaves unpainted cannot be expressed by an override and is kept; the canvas notice counts them. This is how art imported from Aseprite, one layer per variant, becomes one layer whose variants are palette columns. One undo step restores every layer.</td></tr>
+    <tr><td>Delete</td><td>Removes the selected rows. One undo step restores them all. The <kbd>Delete</kbd> key does the same while the layer list has focus (click a row first); in the canvas, <kbd>Delete</kbd> still clears the selected pixels.</td></tr>
+    <tr><td>Up / Down</td><td>Moves the selected layer within its parent.</td></tr>
+  </table>
+  <h3>Selecting, editing, per-view visibility</h3>
+  <ul>
+    <li>Click a row to make it the <strong>working layer</strong> of the focused view. <kbd>Ctrl</kbd>+click adds rows to the selection for group, convert and delete; the first-selected row stays the working layer, so painting is never ambiguous.</li>
+    <li>Click the eye to hide or show a layer in the file; click the padlock to lock or unlock it. Both are saved.</li>
+    <li>A small <strong>swatch before the name</strong> is the layer's <strong>biome color</strong> (§10): its own, or the one it inherits from a group above (the tooltip says which). Layers without one show no swatch.</li>
+    <li><strong>Double-click</strong> a row for <em>Layer Properties</em>: name, opacity, locked, <strong>allowed banks</strong> and <strong>biome color</strong> (six hex digits, blank for none; the swatch beside the box shows it, and the hint says what a blank inherits). Allowed banks say which banks the layer is meant to hold: terms separated by commas, each a wildcard over the bank name (<code>gr-f-*</code>, <code>*-shadow</code>) or <code>segment=value</code> under the document's bank name scheme (<code>biome=f</code>, <code>material=grass</code>; see §10). The terms are the whole rule: <code>biome=f</code> allows exactly the banks whose biome segment is <code>f</code>, and a bank of the same material in another biome is not allowed unless a term names it. The hint under the box lists every allowed bank. Blank means any bank. While such a layer is the working layer, the Palette panel lists its allowed banks first and dims the rest; the palette's own order (the Bank ▲ ▼ buttons, which RG8 export follows) is unchanged. The allowed banks are enforced at the brush: the pencil, fill and shapes refuse a bank the layer excludes and the canvas says why until an allowed bank is picked (the eraser and the shade tool, which write no bank, are unaffected); the Palette panel dims excluded banks while the layer is the working layer; <em>To Indexed</em> matches the allowed banks first; and a paste that brings other banks onto the layer is pointed out in a notice and offers to map them onto the layer's banks (§6). A bank's own <em>Claims layers</em> setting (§8) still applies to a layer with no allowed banks of its own. For an RGBA layer the dialog also has <strong>Mask layer</strong> and <strong>Mask colors</strong>: ticking the box makes it a mask layer (see the Mask row above), the colors box lists what it may be painted in, one per line as <code>RRGGBB</code> and an optional label (applied when the box loses focus), and <em>From pixels</em> fills the list from the colors already painted on the layer and ticks the box. Unticking makes it a plain RGBA layer again; both are undoable.</li>
+    <li>The row's context menu offers <em>Hide in This View</em> and <em>Solo in This View</em>. These change what <em>this canvas</em> shows without touching the file, so a second view of the same document can show everything. <em>Reset This View's Visibility</em> clears them. A view can only ever hide more than the file does, never show a layer the file hides.</li>
+    <li>From the keyboard (the <span class="menu">Layer</span> menu): <kbd>Shift</kbd>+<kbd>N</kbd> and <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd> add an indexed or an RGBA layer beside the working layer; <kbd>Page Up</kbd> and <kbd>Page Down</kbd> move the working layer up and down the stack, through groups, over pixel layers only; <kbd>H</kbd> solos the working layer in this view, and again shows everything.</li>
+    <li>A hidden layer (its eye off, or a group's above it) cannot be painted: the tools refuse and the canvas says so, since the stroke would land out of sight. Show the layer first.</li>
+  </ul>
+  <h3 id="frames">Frames and the timeline</h3>
+  <p>A document has one or more <strong>frames</strong>, each with a duration in milliseconds. Every pixel layer holds a <strong>cel</strong> per frame it has pixels on, as in Aseprite; a frame a layer has no cel at is empty there. The <strong>frame a canvas shows is view state</strong>, like its variant: two views of one file can sit on two frames, and the frame is never undone. Every tool paints the view's frame; copy, cut, paste, move, flip, rotate and shrinkwrap act on it; a floating piece lands on the frame it was lifted from. The status bar shows <em>frame 2/5</em> whenever there is more than one.</p>
+  <ul>
+    <li><strong>The Timeline panel</strong> (bottom): frames across, pixel layers down (top of the stack first), a dot where a layer has a cel, the view's frame lit, the working layer's name in the accent color, and tags as bars over the frame numbers. Click a frame number to show it; click a cell to pick that layer and that frame together. The transport steps and plays; <strong>+ Frame</strong> inserts an empty frame after this one, <strong>Duplicate</strong> a copy of it, <strong>Delete</strong> removes it (the last frame stays), and the <strong>ms</strong> box is this frame's duration (a run of edits is one undo step).</li>
+    <li><strong>The Frame menu and keys.</strong> <kbd>Alt</kbd>+<kbd>N</kbd> new frame, <kbd>Alt</kbd>+<kbd>D</kbd> duplicate, <kbd>Alt</kbd>+<kbd>Delete</kbd> delete, <kbd>,</kbd> and <kbd>.</kbd> previous and next (wrapping), <kbd>Space</kbd> play or stop. <span class="menu">Frame ▸ Frame Duration…</span> asks for this frame's duration; <span class="menu">Frame ▸ Tags…</span> edits the tags.</li>
+    <li><strong>Playback</strong> shows each frame for its duration and loops over the tag the starting frame lies in, in that tag's direction (forward, reverse, ping-pong), or over every frame when it lies in none. It stops when you stop it, when the view changes, or when the document drops to one frame.</li>
+    <li><strong>Tags</strong> name a range of frames (numbered from 1 in the dialog), with a direction and a repeat count, and are what an exporter will name animations by. Inserting a frame inside a tag grows it; deleting a tag's only frame removes the tag. Imported Aseprite files bring their frames, durations and tags across.</li>
+    <li><strong>Onion skinning</strong> (<span class="menu">View ▸ Onion Skin</span>, <kbd>F3</kbd>, or the <em>Onion</em> toggle in the Timeline panel) ghosts the neighboring frames under the current one: the <em>◁</em> and <em>▷</em> boxes say how many frames before and after (0 to 4 each), the nearest clearest and each step fainter, and <em>Tint</em> pulls earlier frames toward red and later ones toward blue so the two sides read apart. The ghosts follow every stroke on their frames, the view's variant, biome and visibility, and sit under the current frame so it reads over them. Frames before the first or after the last are simply absent; nothing wraps. All of it is remembered between runs.</li>
+    <li>What still reads frame 1 only: PNG export, RG8 export and the derived bank and biome masks.</li>
+  </ul>
+</section>
+
+<section id="palette">
+  <h2>8. Palette: variants, banks and slots</h2>
+  <p>The Palette panel has four parts from top to bottom: the <strong>variant strip</strong>, the <strong>Banks</strong> list, the <strong>Slots</strong> grid, and the <strong>color editor</strong>. Drag the bars between the last three to resize them.</p>
+  <h3>Variants</h3>
+  <ul>
+    <li>The chips across the top are the document's variants. The highlighted chip is the colorway <em>the focused canvas shows</em>; click another to switch that canvas. The choice is saved with the file as its opening variant.</li>
+    <li><strong>+</strong> adds a variant seeded from the active one. Double-click a chip, or use its context menu, to <em>Rename</em>, <em>Move Left</em>, <em>Move Right</em> or <em>Remove</em>.</li>
+  </ul>
+  <h3>Banks</h3>
+  <ul>
+    <li>Each row shows the bank's mask-color swatch, name, slot count, a padlock, and a strip of its colors. Click a row to select the bank; its slots appear below.</li>
+    <li><strong>The filter bar</strong> under the header narrows the list as you type. A term is text the name contains (<code>dirt</code>), a wildcard over the whole name (<code>gr-f-*</code>, <code>gr-?-dirt</code>; <code>*</code> any run, <code>?</code> one character), or a segment of the document's bank name scheme (§10) as <code>biome:f</code>, <code>material:dirt</code> or <code>recolor:deep</code> (<code>=</code> works too, and the value may hold wildcards). Several terms separated by spaces all have to match, so <code>material:dirt biome:dt</code> is one bank. A segment term shows nothing when the document has no scheme or the label is not in it. The caption at the right says how many banks are shown of the total; <kbd>Esc</kbd> in the box clears it. The filter is the panel's own and is never saved; the working layer's allowed banks still come first among the banks shown.</li>
+    <li><strong>+</strong> adds a bank, <strong>−</strong> deletes the selected one (its pixels are cleared; Undo brings both back), <strong>▲ ▼</strong> reorder. The context menu has the same plus <em>Properties…</em>, <em>Lock</em>/<em>Unlock</em>, <em>Merge Into…</em>, <em>Split…</em>, <em>Derive Variant Column…</em> and <em>Audit Ramps…</em>.</li>
+    <li><strong>Merge Into…</strong> moves this bank's slots into another bank you pick: every slot by default (the whole bank merges and, with <em>Remove the bank once every slot has left it</em> checked, the emptied bank goes), or only the slots you tick (a selective merge; the rest stay). <strong>Split…</strong> moves the slots you tick into a <em>new</em> bank, named in the dialog and placed right after this one. Either way a moved slot keeps its label and colors in every variant, and <strong>every pixel painted with it follows</strong> to its new bank and slot, so the art does not change; the new bank's slots get fresh ids. The dialog shows what will happen and names any problem (nothing ticked, no other unlocked bank, no name, or a result over 256 slots) before the button lights. One undo step; a locked bank refuses.</li>
+    <li><strong>Derive Variant Column…</strong> rebuilds every slot of the bank in the <em>active</em> variant from a reference variant you pick: the reference's lightness steps, slot by slot, in the hues and saturation the active variant already draws (so a Fire column stays lava while taking Spring's shape), with a slot the reference keeps duller staying duller. <em>Keep this variant's darkest and lightest</em> (on by default) stretches the steps over the column's current range; off takes the reference's lightness as it is. The dialog lists every slot before and after; <em>Apply</em> is one undo step.</li>
+    <li><strong>Audit Ramps…</strong> reads one variant's column against the other variants and lists the slots that break the ramp: a color used twice in the variant (<em>duplicate</em>), a lightness step that runs the other way from every other variant (<em>out of order</em>), or a slot far from where the other variants put it between its neighbors (<em>outlier</em>). Each finding shows the current color and the color the other variants suggest (the same derivation as a cell's <em>Derive From Other Variants…</em>), with a checkbox; <em>Apply Picked</em> applies the ticked ones as one undo step. Nothing is automatic: an odd color may be deliberate, so every fix is yours to tick. Switch the variant in the dialog to audit another column.</li>
+    <li><strong>Double-click</strong> a bank for <em>Bank Properties</em>: name, notes, mask color (six hex digits), <em>Include in wang</em>, <em>Include in rule tiles</em>, the <em>Claims layers</em> setting (<em>None</em>, named layers one per line, or a name pattern) and the lock. Changes apply live.</li>
+    <li><strong>Locking</strong> a bank freezes its definition: name, colors, slots and flags refuse changes. Painting with its slots still works. Imported banks start locked.</li>
+  </ul>
+  <h3>Slots</h3>
+  <ul>
+    <li>Each row is a slot: its label, then one color cell per variant. The highlighted cell in the active variant's column is what the <em>pencil paints</em>; the cell with the accent frame is what the <em>editor edits</em>. Clicking a cell in another column edits that slot in that variant without changing what the canvas shows.</li>
+    <li><strong>+</strong> adds a slot, <strong>−</strong> deletes the selected one (pixels cleared, undoable), <strong>▲ ▼</strong> reorder. <strong>Ramp…</strong> appends a shade ramp built from the editor's color, darkest to lightest, with the number of steps you choose.</li>
+    <li><strong>Double-click</strong> a label to rename it in place; <kbd>Enter</kbd> applies, <kbd>Esc</kbd> cancels.</li>
+    <li><strong>Right-click a cell</strong> for <em>Derive From Other Variants…</em>: puts that slot, in that variant, where the other variants put the same slot between its neighbors (the same position along the step from the slot below to the slot above, with the same offset from that line, measured in a perceptual color space), and at the end of a ramp the step the others take from the one neighbor. The dialog shows the current and the derived color; <em>Apply</em> is one undo step. The usual case is a slot that was given a neighbor's color by mistake.</li>
+  </ul>
+  <h3>Color editor</h3>
+  <p>The editor edits exactly one cell: the selected slot in the edit variant. It shows a swatch, the caption <em>slot · variant</em>, a hex box and seven sliders: H, S, V, R, G, B and A. Drags coalesce into one undo step per cell. The hex box takes six digits for an opaque color or eight to set alpha, and applies on <kbd>Enter</kbd> or when focus leaves. Editing a channel of a fully transparent color makes it opaque. The editor is disabled while the bank is locked.</p>
+  <p><strong>The color picker.</strong> Click the swatch to open it: a small window that edits the same color the editor shows (the selected cell, or the paint color on an RGBA layer) and follows the editor when you select another cell. It has a square, a hue strip, the model's remaining strips and an alpha strip, all live. The model box picks what the strips mean: <em>RGBA</em> (red, green, blue; the square is saturation against value at the hue strip's hue), <em>HSVA</em>, <em>HSLA</em> or <em>Oklab</em> (hue, saturation and lightness in even steps to the eye; saturation runs to the most the screen can show at that lightness and hue, so every point of the square is a real color). The hex box shows the color as <code>RRGGBB</code> or <code>RRGGBBAA</code>, is selectable, applies what you type on <kbd>Enter</kbd>, and <strong>Copy</strong> puts it on the clipboard. <strong>Pick</strong> is an eyedropper for the whole screen: the pointer shows the color under it and its hex, a click takes it (its alpha stays what the color had), <kbd>Esc</kbd> gives up; it reads the screen itself, so another program's window can be sampled. Picking from the screen is available on Windows. <kbd>Esc</kbd> closes the picker; every change is undoable as a slider drag is.</p>
+  <h3>Painting a freeform (RGBA) layer</h3>
+  <p>While the working layer is freeform, the panel switches to its <strong>paint color</strong>: the caption reads <em>Paint color · RGBA layer</em>, the editor's sliders and hex box set the color the pencil, fill and shapes write (the eraser writes transparent), and clicking any slot cell takes that cell's color as the paint color without selecting the slot for painting references. The banks are a swatch book here, not something being edited: the slot buttons are disabled and no bank changes. The eyedropper on a freeform layer picks a color the same way. Painting is undoable per stroke as on an indexed layer, and selecting, moving, cutting, copying and pasting work as they do on an indexed layer (§6).</p>
+  <p>On a <strong>mask layer</strong> (§7) the caption reads <em>Paint color · Mask layer</em> and the mask's colors appear as swatches above the editor; clicking one takes it as the paint color. A stroke in a color the mask does not list is refused with the list of its colors; the eraser always works.</p>
+</section>
+
+<section id="grid">
+  <h2>9. Grid and cell status</h2>
+  <p>A document can carry a cell grid for tile work. <span class="menu">View ▸ Grid Settings…</span> sets the cell width and height and the grid's origin (<em>X</em>, <em>Y</em>, which may be negative so the grid can be offset from the top-left); <em>Remove grid</em> clears it. The grid is drawn when <span class="menu">View ▸ Show Grid</span> is on and is saved with the file.</p>
+  <p><strong>Cell status</strong> marks work progress per cell. Hover a cell and press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> (<span class="menu">View ▸ Cycle Cell Status</span>) to cycle it: none → <em>WIP</em> → <em>Problem</em> → <em>Complete</em> → none. Badges show when <span class="menu">View ▸ Show Cell Status</span> is on. Statuses are saved and are undoable.</p>
+  <p><span class="menu">Image ▸ Canvas Size…</span> (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) resizes the document with a nine-way anchor. Every layer, the grid, cell statuses and the selection move with the art, and Undo restores cropped pixels.</p>
+</section>
+
+<section id="document-settings">
+  <h2>10. Document settings, the bank mask layer and the biome mask layer</h2>
+  <p><span class="menu">Image ▸ Document Settings…</span> names the document's <strong>bank mask layer</strong>. Blank means none. The box suggests the file's RGBA layers as you type; the mouse wheel scrolls the open list. Once a name is set:</p>
+  <ul>
+    <li>If no layer of that name exists, a hidden mask layer (§7) is created at the top of the stack; its colors come from the banks, so its mask color list stays empty.</li>
+    <li>After every edit, that layer is recomputed: each position takes the mask color of the bank of the top-most painted indexed pixel there, or transparent where nothing is painted. Hidden art layers still contribute.</li>
+    <li>It is derived data. Anything painted on it is overwritten, and undo and redo keep it in step without extra steps.</li>
+    <li>Naming a layer that already has painted pixels <strong>asks first</strong>: <em>Overwrite</em> adopts it and recomputes it from the art; <em>Keep as Painted</em> changes nothing. Undoing the adoption restores the painted pixels. The same applies to the biome mask layer below, where the question points at <em>Apply Biome Mask Colors</em>: run that first so the layers carry the colors the mask is derived from, or the derived mask has nothing to show.</li>
+  </ul>
+  <p>This is the mask layer the Aseprite and RG8 pipelines read (the Evocuration masters use <code>Mask_Banks</code>). Tesserae itself does not need it to know a pixel's bank. The setting is saved in the file. The reasoning behind banks, claims and the mask layer is in <code>docs/banks-and-mask-layers.md</code>.</p>
+  <h3>Bank name scheme</h3>
+  <p>The same dialog names the document's <strong>bank name scheme</strong>: one word per segment of a bank name such as <code>gr-f-dirt-deep</code>, for example <code>set-biome-material-recolor</code>. The words are yours: each labels its segment, and the Banks filter (§8) and a layer's allowed banks (§7) ask for a segment by that label (<code>biome:f</code>, <code>material=grass</code>), so <code>set-biosphere-material-special</code> reads <code>biosphere:f</code> just as well. The separator is the first punctuation character in the template (<code>-</code> here). Two words carry meaning: <code>biome</code> marks the colorway segment, and <code>recolor</code> (last only) a recolor within the material, such as <code>deep</code>, <code>highlight</code> or <code>dead</code>; every other segment is part of the material. The word <code>bank</code> alone is reserved and refused (it means the whole bank); a longer word such as <code>bankset</code> is fine. Each segment is its own thing: <code>material</code> is the material segment and nothing else. Two banks share <strong>art</strong>, the same drawing recolored, exactly when every segment other than the biome and the recolor agrees; that is the name's <strong>art key</strong>: under the Evo scheme <code>gr-f-dirt</code> and <code>gr-dt-dirt</code> both have art key <code>gr-dirt</code>, and so do <code>gr-f-grass</code> and <code>gr-f-grass-deep</code>. A name may stop short of the template: a missing trailing segment is simply absent (<code>gr-f-dirt</code> under <code>set-biome-material-special</code> has set <code>gr</code>, biome <code>f</code>, material <code>dirt</code>, no special, art key <code>gr-dirt</code>). Extra trailing segments fold into the recolor when the scheme ends in one (<code>gr-f-cliff-wall-red</code> reads as recolor <code>wall-red</code>), and otherwise join the art key. A special with its own art is its own art key once its name fuses it into the material segment (<code>gr-aw-waterfrozen</code>). As you type, the hint reads the file's first bank name segment by segment under the template's labels and shows its art key; a template that cannot be read disables OK. Blank means the names carry no structure.</p>
+  <p>The scheme lets a layer's <em>allowed banks</em> be written as <code>biome=f</code> or <code>material=grass</code> (§7), and it travels with the palette: <em>Export BankMap</em> writes it as <code>bankNameScheme</code> and <em>Import BankMap</em> adopts the file's scheme when the document has none, so Tesserae and the XephTools Tile Graph read bank names by one grammar.</p>
+  <h3>Biome mask layer and biome colors</h3>
+  <p>The same dialog names the document's <strong>biome mask layer</strong> (the Evocuration sheets use <code>Mask_Biomes</code>), derived the way the bank mask is: created hidden if missing, recomputed after every edit, never painted on. Each position takes the <strong>biome color</strong> of the top-most painted indexed layer that has one; a layer without a biome color (a shadow layer, say) lets the layer beneath it decide, and where no painted layer has one the mask is transparent. A layer's biome color is set in <em>Layer Properties</em> (§7), one biome per layer; a <strong>group's</strong> biome color is inherited by every layer in it that has none of its own, so coloring the group is enough. The Layers panel shows the color as a swatch before the name. Biome colors and the mask layer's name are saved in the file.</p>
+  <p><span class="menu">Image ▸ Apply Biome Mask Colors</span> fills the colors in from the layers' <em>allowed banks</em>: every layer or group whose allowed banks say <code>biome=f</code> (one biome, no wildcard) belongs to biome <code>f</code>, and each biome gets one color. A biome keeps the color a layer of it already has; failing that it takes the color painted for it in an existing biome mask layer (the named one, or a layer called <code>Mask_Biomes</code> brought in from Aseprite, read under that biome's painted pixels), so colors a pipeline already expects are kept; failing that it takes the next of a fixed set of twelve distinct colors. Layers that already have a color are left alone. One undo step; the canvas notice counts the biomes and layers colored, or says why nothing was.</p>
+  <p><span class="menu">Image ▸ Audit Bank Mask</span> compares the painted mask with the art without changing anything: the document's named mask layer, or a layer called <code>Mask_Banks</code> when none is named. For every painted indexed pixel (top-most first) it checks the mask color under it against its bank's, and reports the painted pixels, those with no mask under them, and every group of mismatches by painted color and bank with the grid cells they fall in (<code>row × columns + column</code>). Run it on art converted from Aseprite <em>before</em> naming the mask layer as derived, since naming it overwrites what was painted; the same mask also settles colors that several banks share during <em>To Indexed</em>.</p>
+</section>
+
+<section id="interop">
+  <h2>11. Import and export</h2>
+  <table>
+    <tr><th>Command</th><th>Shortcut</th><th>What it does</th></tr>
+    <tr><td><span class="menu">File ▸ Import Aseprite…</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd></td><td>Opens an <code>.aseprite</code>/<code>.ase</code> file as a new, unsaved document. Indexed files become indexed layers with a bank built from the palette; RGBA and grayscale files become freeform layers; groups, visibility, opacity and the grid carry over; tilemap layers are flattened to pixels. The source file is never written. A report lists anything that did not survive (unknown chunks, color profiles, slices kept as metadata, unreadable cels).</td></tr>
+    <tr><td><span class="menu">File ▸ Import RG8…</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd></td><td>Opens an RG8 set as a new document. Pick the folder; the set is found by its <code>*_Index.png</code>, and the atlas and BankMap beside it supply the palette.</td></tr>
+    <tr><td><span class="menu">File ▸ Export RG8…</span></td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd></td><td>Writes three files into a chosen folder, named from the document: <code>name_Index.png</code> (one pixel per document pixel: R = slot, G = bank, A = painted), <code>name_Atlas.png</code> (every variant's colors plus a metadata header) and <code>name_BankMap.json</code>. One frame is exported. Hidden layers are skipped silently; anything visible the format cannot carry (a freeform layer, a variant override, partial opacity) is reported as a warning.</td></tr>
+    <tr><td><span class="menu">File ▸ Import BankMap…</span></td><td></td><td>Folds a <code>BankMap.json</code> into the open document's palette, as one undo step. Variants are matched by name and added when missing; every added bank starts locked. When the file names banks the document already has, a prompt asks first: <strong>Import New</strong> adds only the banks the document lacks and leaves the existing ones as they are; <strong>Overwrite Banks</strong> gives the existing banks the file's slots, order, colors in every variant and mask color (the derived bank mask layer follows), keeping their claims, locks and names; <strong>Cancel</strong> changes nothing. An overwrite matches each slot by its <em>colors</em>, not its position: a slot whose colors the file still has keeps its identity and moves to the file's position, so a BankMap whose slots were reordered reorders the palette without recoloring a single pixel; a color the bank did not have becomes a new slot where the file has it, and a slot whose colors the file no longer holds is removed (its pixels render transparent until repainted; Undo brings it back). A file that names a bank name scheme gives it to a document that has none, and a file that carries slot <code>labels</code> names the slots. The result is a canvas notice such as <em>BankMap: 12 banks added, 27 overwritten; 169 slots reordered, pixels kept</em>.</td></tr>
+    <tr><td><span class="menu">File ▸ Export BankMap…</span></td><td></td><td>Writes the palette alone: <code>.json</code> for XephTools to import, or <code>.md</code> for people to read and diff. Choose by the extension you save with. The <code>.json</code> carries the bank name scheme and, for a bank whose slots you named, their labels (<code>labels</code>); XephTools reads both, and a slot label becomes the bank's index label there.</td></tr>
+  </table>
+  <p>Opening a plain <code>.png</code> gives one freeform layer; nothing is guessed into banks. Run <em>To Indexed</em> when ready. Saving as <code>.png</code> flattens the variant the canvas shows.</p>
+</section>
+
+<section id="safety">
+  <h2>12. Autosave, recovery and logs</h2>
+  <ul>
+    <li><strong>Autosave</strong> captures every open document every two minutes and whenever the window loses focus, to journals outside your files. Your file on disk is only written by Save.</li>
+    <li><strong>Recovery.</strong> If Tesserae did not exit cleanly, the next launch asks <em>Recover unsaved work?</em> and lists what it found. Recovered documents have no path until you Save, which then asks where. Declining discards the journals.</li>
+    <li><strong>Crashes</strong> write a bundle with the stack trace and the log tail into the logs folder below (<span class="menu">Help ▸ Open Logs Folder</span>). Please attach it when reporting a problem, with the version from <span class="menu">Help ▸ About Tesserae…</span>.</li>
+    <li>Saves are atomic: the file is written beside the original and swapped in, so an interrupted save cannot leave a half-written document.</li>
+  </ul>
+</section>
+
+<section id="shortcuts">
+  <h2>13. Keyboard shortcuts</h2>
+  <p>Shortcuts work in the main window and in every floating panel window. Single-key tool shortcuts are ignored while a text box has focus. Menus show each shortcut beside its item.</p>
+  <table>
+    <tr><th>Shortcut</th><th>Command</th></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>N</kbd></td><td>New…</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>O</kbd></td><td>Open…</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>S</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>Save / Save As…</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>W</kbd></td><td>Close</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd></td><td>Import Aseprite…</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd></td><td>Import RG8… / Export RG8…</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td>Undo / Redo</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>X</kbd> / <kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>Ctrl</kbd>+<kbd>V</kbd></td><td>Cut / Copy / Paste</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>A</kbd> / <kbd>Ctrl</kbd>+<kbd>D</kbd> / <kbd>Delete</kbd></td><td>Select All / Deselect / Delete selection (with no selection, <kbd>Delete</kbd> is free for the layer list)</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>I</kbd></td><td>Invert Selection</td></tr>
+    <tr><td><kbd>Shift</kbd>+<kbd>S</kbd> / <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>Snap to Grid on / off; Shrinkwrap Selection</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td><td>Focus on Selection / Focus off</td></tr>
+    <tr><td><kbd>F3</kbd></td><td>Onion Skin on / off</td></tr>
+    <tr><td><kbd>Shift</kbd>+<kbd>H</kbd> / <kbd>Shift</kbd>+<kbd>V</kbd></td><td>Flip the selection horizontally / vertically</td></tr>
+    <tr><td><kbd>Shift</kbd>+<kbd>R</kbd> / <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td><td>Rotate the selection clockwise / counterclockwise</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd></td><td>Canvas Size…</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td><td>Cycle Cell Status (cell under the pointer)</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd></td><td>New View of Document</td></tr>
+    <tr><td><kbd>F11</kbd></td><td>Full Screen</td></tr>
+    <tr><td><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> <kbd>5</kbd> <kbd>6</kbd></td><td>Zoom 100 %, 200 %, 400 %, 800 %, 1600 %, 3200 %</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>0</kbd> / <kbd>Ctrl</kbd>+<kbd>+</kbd> / <kbd>Ctrl</kbd>+<kbd>−</kbd></td><td>Zoom to Fit / Zoom In / Zoom Out</td></tr>
+    <tr><td><kbd>Shift</kbd>+<kbd>N</kbd> / <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd></td><td>New Indexed Layer / New RGBA Layer, beside the working layer</td></tr>
+    <tr><td><kbd>Alt</kbd>+<kbd>N</kbd> / <kbd>Alt</kbd>+<kbd>D</kbd> / <kbd>Alt</kbd>+<kbd>Delete</kbd></td><td>New Frame / Duplicate Frame / Delete Frame</td></tr>
+    <tr><td><kbd>,</kbd> / <kbd>.</kbd> / <kbd>Space</kbd></td><td>Previous frame / Next frame / Play or stop</td></tr>
+    <tr><td><kbd>Page Up</kbd> / <kbd>Page Down</kbd></td><td>Working layer up / down the stack (pixel layers only, through groups; the ends stop)</td></tr>
+    <tr><td><kbd>H</kbd></td><td>Solo the working layer in this view; again to show everything</td></tr>
+    <tr><td><kbd>Delete</kbd> (layer list focused)</td><td>Delete the selected layers; one undo step</td></tr>
+    <tr><td><kbd>[</kbd> / <kbd>]</kbd></td><td>Smaller / Larger brush</td></tr>
+    <tr><td><kbd>B</kbd> <kbd>E</kbd> <kbd>S</kbd> <kbd>G</kbd> <kbd>I</kbd> <kbd>V</kbd> <kbd>Shift</kbd>+<kbd>G</kbd></td><td>Pencil, Eraser, Shade, Fill, Eyedropper, Move, Gradient</td></tr>
+    <tr><td><kbd>M</kbd> <kbd>Q</kbd> <kbd>W</kbd></td><td>Marquee, Lasso, Magic Wand</td></tr>
+    <tr><td><kbd>L</kbd> <kbd>Shift</kbd>+<kbd>L</kbd> <kbd>U</kbd> <kbd>Shift</kbd>+<kbd>U</kbd> <kbd>P</kbd></td><td>Line, Curve, Rectangle, Ellipse, Path</td></tr>
+    <tr><td><kbd>Esc</kbd> / <kbd>Enter</kbd> / <kbd>Backspace</kbd> / arrows</td><td>In the canvas: abandon gesture (a curve waiting for its control points included) / commit floating piece, or stroke the path with the Path tool / remove the path's selected anchor / nudge a piece (<kbd>Shift</kbd>: by 10; with Snap to Grid on, by a cell). <kbd>Esc</kbd> with no gesture backs out one step anywhere in the window: path, floating piece, selection, focus</td></tr>
+  </table>
+  <p>Bindings can be changed by editing the <code>shortcuts</code> map in <code>settings.json</code> (gesture → command or tool id, for example <code>"Ctrl+Shift+E": "file.exportRg8"</code>). Once that map exists it is authoritative: a default gesture it does not list stays unbound.</p>
+</section>
+
+<section id="files">
+  <h2>14. Where Tesserae keeps its files</h2>
+  <p>Per-user data lives under <code>%APPDATA%\Tesserae</code> on Windows and <code>~/.config/Tesserae</code> elsewhere:</p>
+  <table>
+    <tr><th>Path</th><th>Holds</th></tr>
+    <tr><td><code>settings.json</code></td><td>Theme, shortcut overrides, tool options, overlay toggles.</td></tr>
+    <tr><td><code>layouts/last.json</code></td><td>The panel layout saved on quit.</td></tr>
+    <tr><td><code>layouts/<em>name</em>.json</code></td><td>Layouts saved under a name.</td></tr>
+    <tr><td><code>autosave/</code></td><td>Autosave journals; offered for recovery after an unclean exit.</td></tr>
+    <tr><td><code>logs/</code></td><td>The application log and crash bundles (<code>crash-YYYYMMDD-HHMMSS.txt</code>).</td></tr>
+  </table>
+  <p>Deleting the folder resets Tesserae to defaults; it never contains your documents.</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="inner">Tesserae User Guide · kept in <code>Documentation/User-Guide.html</code> in the repository and updated with the application. Licenses of bundled software: <code>THIRD-PARTY-NOTICES.md</code>. File format: <code>Tesserae-File-Format.md</code>.</div>
+</footer>
+
+</body>
+</html>
