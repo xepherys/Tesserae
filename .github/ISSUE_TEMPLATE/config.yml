@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: User guide
+    url: https://github.com/xepherys/Tesserae/blob/main/docs/User-Guide.html
+    about: How every tool, panel and menu works.
+  - name: Releases
+    url: https://github.com/xepherys/Tesserae/releases
+    about: Download the newest build and read what changed.

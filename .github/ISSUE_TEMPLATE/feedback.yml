@@ -1,0 +1,27 @@
+name: Feedback
+description: Something awkward, something missing, or something you expected to work another way.
+title: "[Feedback] "
+labels: ["feedback"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What you were doing
+      description: The task you had in hand, and where Tesserae got in the way or fell short.
+    validations:
+      required: true
+  - type: textarea
+    id: wish
+    attributes:
+      label: What you expected or wished for
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: From the title bar or Help ▸ About Tesserae…
+      placeholder: 0.1.0-alpha.1
+  - type: input
+    id: editor
+    attributes:
+      label: Editor you are coming from
+      description: Aseprite, Pyxel Edit, Photoshop, something else. Helps with judging what feels off.

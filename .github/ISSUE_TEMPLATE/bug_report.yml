@@ -1,0 +1,49 @@
+name: Bug report
+description: Something went wrong, crashed, or produced the wrong result.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: details
+    attributes:
+      label: Build details
+      description: In Tesserae, Help ▸ About Tesserae… ▸ Copy Details, then paste here.
+      placeholder: |
+        Tesserae 0.1.0-alpha.1
+        .NET 10.0.0
+        Microsoft Windows 10.0.26300 (X64)
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a .tess with two variants
+        2. Select the Fill tool
+        3. Click a transparent pixel
+    validations:
+      required: true
+  - type: textarea
+    id: files
+    attributes:
+      label: Logs and files
+      description: Help ▸ Open Logs Folder opens the folder with the application log and any crash bundles. Drag the newest ones here, and the document that triggers the problem if you can share it.
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often
+      options:
+        - Every time
+        - Sometimes
+        - Once
+    validations:
+      required: true
